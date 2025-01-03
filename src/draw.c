@@ -12,6 +12,7 @@ void drawSquare(Vec gameSize, Vec pos, int color) {
 	int xPos = xDiff * pos.x;
 	int yPos = yDiff * pos.y;
 	
+	// todo: make size adjust for term size 
 	// int xPlus = size.x % gameSize.x;
 	// int yPlus = size.y % gameSize.y;
 

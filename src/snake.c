@@ -35,6 +35,19 @@ void maintainFood(Vec *food, int size, Vec gameSize, Vec *snake) {
 	}
 }
 
+bool eatFood(Vec *snake, Vec *food, int foodQuantity, int *points) {
+	for (int i = 0; i < foodQuantity; i++) { 
+		if (snake[0].x == food[i].x && snake[0].y == food[i].y) {
+			food[i].x = -1;
+			food[i].y = -1;
+			*points = *points + 1;
+			printf("%i", *points);
+			return true;
+		}
+	}
+	return false;
+}
+
 void moveSnake(Vec *snake, Vec *food, Vec gameSize, int foodSize, char move, int points) {
 	for (int i = points; i > 0; i--) {
 		snake[i] = snake[i - 1];
@@ -65,23 +78,21 @@ void moveSnake(Vec *snake, Vec *food, Vec gameSize, int foodSize, char move, int
 
 int main(void) {
 	Vec gameSize;
-	gameSize.x = 20;
-	gameSize.y = 20;
-	int foodQuantity = 10;
+	gameSize.x = 5;
+	gameSize.y = 5;
+	int foodQuantity = 8;
 	if (foodQuantity > (gameSize.x * gameSize.y) - 1) {
 		printf("too big foodQuantity max is %i\n", (gameSize.x * gameSize.y) - 1);
 		return 1;
 	}
-	int points = 3;
+	int points = 2;
 	Vec snake[gameSize.x * gameSize.y];
 	snake[0].x = gameSize.x / 2;
 	snake[0].y = gameSize.y / 2;
-	snake[1].x = gameSize.x / 2 - 1;
-	snake[1].y = gameSize.y / 2;
-	snake[2].x = gameSize.x / 2 - 2;
-	snake[2].y = gameSize.y / 2;
-	snake[3].x = gameSize.x / 2 - 3;
-	snake[3].y = gameSize.y / 2;
+	for (int i = 1, n = gameSize.x * gameSize.y; i < n; i++) {
+		snake[i].x = 0;
+		snake[i].y = 0;
+	}
 	Vec food[foodQuantity];
 	for (int i = 0, n = foodQuantity; i < n; i++) {
 		food[i].x = -1;
@@ -94,13 +105,16 @@ int main(void) {
 
 	char move = 'd';
 	char key;
+	bool won = false;
 	while (1) {
 		// key fetching logic //
-		usleep(210000);
+		//usleep(210000);
+		sleep(1);
 		while (kbHit() == 1) {
 			key = fgetc(stdin);
 			if (key == 'w' || key == 's' || key == 'a' || key == 'd' || key == 'q') {
 				if (key == 'w' && move == 's') {
+					points++;
 					goto leave;
 				}
 				if (key == 's' && move == 'w') {
@@ -118,12 +132,24 @@ int main(void) {
 		if (move == 'q') { break; }
 		// snake game logic //
 		moveSnake(&snake[0], &food[0], gameSize, foodQuantity, move, points);
-		maintainFood(&food[0], foodQuantity, gameSize, &snake[0]);
+		if (eatFood(&snake[0], &food[0], foodQuantity, &points)) {
+			maintainFood(&food[0], foodQuantity, gameSize, &snake[0]);
+		}
+		if (points >= gameSize.x * gameSize.y) {
+			won = true;
+			goto leave;
+		}
 		fflush(stdout);
 	}
+	
+	
 	leave:
-	fflush(stdout);
-		
 	stopTerm();
+	fflush(stdout);
+	if (won) {
+		printf("\e[38;5;3m===\nwon\n===\e[0m\n");
+	} else {
+		printf("\e[38;5;1m----\nlose\n----\n");
+	}
 	return 0;
 }

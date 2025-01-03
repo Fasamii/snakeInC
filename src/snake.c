@@ -8,26 +8,29 @@
 #include "./draw.h"
 #include "./terminal.h"
 
-bool isVecUsed(Vec new, Vec *oldArr, int size, Vec *snake) {
-	for (int i = 0, n = size; i < n; i++) {
+bool isVecUsed(Vec new, Vec *oldArr, int foodSize, Vec *snake, int snakeSize) {
+	for (int i = 0, n = foodSize; i < n; i++) {
 		if (new.x == oldArr[i].x && new.y == oldArr[i].y) {
 			return true;
-		} else if (new.x == snake[i].x && new.y == snake[i].y) {
-			return false;
+		}
+	}
+	for (int i = 0, n = snakeSize; i < n; i++) {
+		if (new.x == snake[i].x && new.y == snake[i].y) {
+			return true;
 		}
 	}
 	return false;
 }
 
-void maintainFood(Vec *food, int size, Vec gameSize, Vec *snake) {
+void maintainFood(Vec *food, int size, Vec gameSize, Vec *snake, int snakeSize) {
 	for (int i = 0, n = size; i < n; i++) {
-		if (food[i].x == -1 || food[i].y == -1) {
+		if ((food[i].x == -1 || food[i].y == -1) && (gameSize.x * gameSize.y) >= snakeSize + size) {
 			//printf("\e[38;5;3m<food is used>\e[0m\n");
 			Vec new;
 			do {
 				new.x = rand() % gameSize.x;
 				new.y = rand() % gameSize.y;
-			} while (isVecUsed(new, food, size, snake));
+			} while (isVecUsed(new, food, size, snake, snakeSize));
 			food[i] = new;
 			drawSquare(gameSize, food[i], 1);
 			//printf("|\nrandom pos: x=>%i ; y=>%i\n", new.x, new.y);
@@ -100,7 +103,7 @@ int main(void) {
 	}
 	srand(time(NULL));
 	initTerm();
-	maintainFood(&food[0], foodQuantity, gameSize, &snake[0]);
+	maintainFood(&food[0], foodQuantity, gameSize, &snake[0], points);
 	fflush(stdout);
 
 	char move = 'd';
@@ -133,7 +136,7 @@ int main(void) {
 		// snake game logic //
 		moveSnake(&snake[0], &food[0], gameSize, foodQuantity, move, points);
 		if (eatFood(&snake[0], &food[0], foodQuantity, &points)) {
-			maintainFood(&food[0], foodQuantity, gameSize, &snake[0]);
+			maintainFood(&food[0], foodQuantity, gameSize, &snake[0], points);
 		}
 		if (points >= gameSize.x * gameSize.y) {
 			won = true;

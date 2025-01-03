@@ -44,7 +44,7 @@ bool eatFood(Vec *snake, Vec *food, int foodQuantity, int *points) {
 			food[i].x = -1;
 			food[i].y = -1;
 			*points = *points + 1;
-			printf("%i", *points);
+			// printf("%i", *points);
 			return true;
 		}
 	}
@@ -111,8 +111,7 @@ int main(void) {
 	bool won = false;
 	while (1) {
 		// key fetching logic //
-		//usleep(210000);
-		sleep(1);
+		usleep(210000);
 		while (kbHit() == 1) {
 			key = fgetc(stdin);
 			if (key == 'w' || key == 's' || key == 'a' || key == 'd' || key == 'q') {

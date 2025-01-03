@@ -1,3 +1,5 @@
+files := snake terminal draw
+
 exe: ./build/snake.o ./build/terminal.o ./build/draw.o dir
 	gcc ./build/snake.o ./build/terminal.o ./build/draw.o -o exe
 	./exe

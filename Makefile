@@ -1,21 +1,25 @@
-files := snake terminal draw
+# variables #
+BIN_NAME := exe
+CC := gcc
+FLAGS :=
+SRC_DIR:= ./src/
+BUILD_DIR := ./build/
+# files #
+SRC_FILES = $(wildcard $(SRC_DIR)*.c)
+OBJ_FILES = $(patsubst $(SRC_DIR)%.c, $(BUILD_DIR)%.o, $(SRC_FILES))
 
-exe: ./build/snake.o ./build/terminal.o ./build/draw.o dir
-	gcc ./build/snake.o ./build/terminal.o ./build/draw.o -o exe
-	./exe
+# make #
+$(BIN_NAME) : $(BUILD_DIR) $(OBJ_FILES) 
+	$(CC) $(FLAGS) $(OBJ_FILES) -o ./$(BIN_NAME)
 
-./build/terminal.o : ./src/terminal.c dir
-	gcc -c ./src/terminal.c -o ./build/terminal.o
+$(BUILD_DIR)%.o : $(SRC_DIR)%.c
+	gcc -c $< -o $@
 
-./build/draw.o : ./src/draw.c dir
-	gcc -c ./src/draw.c -o ./build/draw.o
+$(BUILD_DIR) :
+	mkdir -p ./build
 
-./build/snake.o : ./src/snake.c dir
-	gcc -c ./src/snake.c -o ./build/snake.o
-
-dir :
-	mkdir -p build
-
-clean :
-	rm -r ./build
-	rm exe
+# clean #
+.PHONY : clean
+clean : 
+	rm -r $(BUILD_DIR)
+	rm ./$(BIN_NAME)

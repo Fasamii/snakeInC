@@ -113,7 +113,6 @@ int main(void) {
 	bool won = false;
 	while (1) {
 		// key fetching logic //
-		usleep(210000);
 		while (kbHit() == 1) {
 			key = fgetc(stdin);
 			if (key == 'w' || key == 's' || key == 'a' || key == 'd' || key == 'q') {
@@ -144,6 +143,7 @@ int main(void) {
 			goto leave;
 		}
 		fflush(stdout);
+		usleep(210000);
 	}
 	
 	

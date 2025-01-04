@@ -53,34 +53,6 @@ bool eatFood(Vec *snake, Vec *food, int foodQuantity, int *points) {
 	return false;
 }
 
-void moveSnake(Vec *snake, Vec *food, Vec gameSize, int foodSize, char move, int points) {
-	for (int i = points; i > 0; i--) {
-		snake[i] = snake[i - 1];
-		drawSquare(gameSize, snake[i], 22);
-	}
-
-	switch (move) {
-		case 'w': 
-			snake[0].x = snake[0].x - 1;
-			drawSquare(gameSize, snake[0], 2);
-			break;
-		case 's': 
-			snake[0].x = snake[0].x + 1;
-			drawSquare(gameSize, snake[0], 2);
-			break;
-		case 'a': 
-			snake[0].y = snake[0].y - 1;
-			drawSquare(gameSize, snake[0], 2);
-			break;
-		case 'd': 
-			snake[0].y = snake[0].y + 1;
-			drawSquare(gameSize, snake[0], 2);
-			break;
-	}
-	drawSquare(gameSize, snake[points], 0);
-	fflush(stdout);
-}
-
 int main(void) {
 	Vec gameSize;
 	gameSize.x = 6;
@@ -134,7 +106,33 @@ int main(void) {
 		}
 		if (move == 'q') { break; }
 		// snake game logic //
-		moveSnake(&snake[0], &food[0], gameSize, foodQuantity, move, points);
+		for (int i = points; i > 0; i--) {
+			snake[i] = snake[i - 1];
+			drawSquare(gameSize, snake[i], 22);
+		}
+
+		switch (move) {
+			case 'w': 
+				snake[0].x = snake[0].x - 1;
+				drawSquare(gameSize, snake[0], 2);
+				break;
+			case 's': 
+				snake[0].x = snake[0].x + 1;
+				drawSquare(gameSize, snake[0], 2);
+				break;
+			case 'a': 
+				snake[0].y = snake[0].y - 1;
+				drawSquare(gameSize, snake[0], 2);
+				break;
+			case 'd': 
+				snake[0].y = snake[0].y + 1;
+				drawSquare(gameSize, snake[0], 2);
+				break;
+		}
+
+		drawSquare(gameSize, snake[points], 0);
+		fflush(stdout);
+
 		if (eatFood(&snake[0], &food[0], foodQuantity, &points)) {
 			maintainFood(&food[0], foodQuantity, gameSize, &snake[0], points);
 		}

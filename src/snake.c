@@ -40,19 +40,6 @@ void maintainFood(Vec *food, int size, Vec gameSize, Vec *snake, int snakeSize) 
 	}
 }
 
-bool eatFood(Vec *snake, Vec *food, int foodQuantity, int *points) {
-	for (int i = 0; i < foodQuantity; i++) { 
-		if (snake[0].x == food[i].x && snake[0].y == food[i].y) {
-			food[i].x = -1;
-			food[i].y = -1;
-			*points = *points + 1;
-			// printf("%i", *points);
-			return true;
-		}
-	}
-	return false;
-}
-
 int main(void) {
 	Vec gameSize;
 	gameSize.x = 6;
@@ -133,9 +120,15 @@ int main(void) {
 		drawSquare(gameSize, snake[points], 0);
 		fflush(stdout);
 
-		if (eatFood(&snake[0], &food[0], foodQuantity, &points)) {
-			maintainFood(&food[0], foodQuantity, gameSize, &snake[0], points);
+		for (int i = 0; i < foodQuantity; i++) { 
+			if (snake[0].x == food[i].x && snake[0].y == food[i].y) {
+				food[i].x = -1;
+				food[i].y = -1;
+				points = points + 1;
+				maintainFood(&food[0], foodQuantity, gameSize, &snake[0], points);
+			}
 		}
+
 		if (points >= gameSize.x * gameSize.y) {
 			won = true;
 			goto leave;

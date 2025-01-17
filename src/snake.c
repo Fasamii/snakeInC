@@ -8,6 +8,10 @@
 #include "./draw.h"
 #include "./terminal.h"
 
+Vec choeseVecFromArray(Vec *arr, int size) {
+
+}
+
 bool isVecUsed(Vec new, Vec *oldArr, int foodSize, Vec *snake, int snakeSize) {
 	for (int i = 0, n = foodSize; i < n; i++) {
 		if (new.x == oldArr[i].x && new.y == oldArr[i].y) {
@@ -25,9 +29,9 @@ bool isVecUsed(Vec new, Vec *oldArr, int foodSize, Vec *snake, int snakeSize) {
 int main(void) {
 	Vec gameSize;
 
-	gameSize.x = 6;
-	gameSize.y = 8;
-	int foodQuantity = 3;
+	gameSize.x = 25;
+	gameSize.y = 35;
+	int foodQuantity = 4;
 	int snakeSize = 2;
 	int ammountOfBoxesInGrid = gameSize.x * gameSize.y;
 
@@ -118,7 +122,7 @@ int main(void) {
 		}
 
 		fflush(stdout);
-		usleep(210000);
+		usleep(130000);
 	}
 	
 	

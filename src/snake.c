@@ -24,31 +24,27 @@ bool isVecUsed(Vec new, Vec *oldArr, int foodSize, Vec *snake, int snakeSize) {
 
 int main(void) {
 	Vec gameSize;
+
 	gameSize.x = 6;
 	gameSize.y = 8;
+	int foodQuantity = 3;
+	int snakeSize = 2;
 	int ammountOfBoxesInGrid = gameSize.x * gameSize.y;
-	int foodQuantity = 33;
+
 	if (foodQuantity > (ammountOfBoxesInGrid) - 1) {
 		printf("too big foodQuantity max is %i\n", (ammountOfBoxesInGrid) - 1);
 		return 1;
 	}
-	int snakeSize = 2;
+
 	Vec snake[ammountOfBoxesInGrid];
 	snake[0].x = gameSize.x / 2;
 	snake[0].y = gameSize.y / 2;
 	for (int i = 1, n = ammountOfBoxesInGrid; i < n; i++) {
-		snake[i].x = 0;
-		snake[i].y = 0;
+		snake[i] = snake[0];
 	}
 	Vec food[foodQuantity];
-	for (int i = 0, n = foodQuantity; i < n; i++) {
-		food[i].x = -1;
-		food[i].y = -1;
-	}
-
 	srand(time(NULL));
 	initTerm();
-
 	for (int i = 0; i < foodQuantity; i++) {
 		Vec new;
 		do {
@@ -58,40 +54,19 @@ int main(void) {
 		food[i] = new;
 		drawSquare(gameSize, food[i], 1);
 	}
-
 	fflush(stdout);
 
 	char move = 'd';
-	char key;
-	bool won = false;
+	char key = ' ';
+	bool win = false;
 	while (1) {
-		// key fetching logic //
-		// NOTE : for some reason "kbHit() == 1" fells soother thab "kbHit() > 0"
-		while (kbHit() == 1) {
+		while (kbHit() > 0) {
 			key = fgetc(stdin);
-			if (key == 'w' || key == 's' || key == 'a' || key == 'd' || key == 'q') {
-				// TODO make some sor of reverse datatype for keys
-				// TODO change from leave to just ignore input
-				if (key == 'w' && move == 's') {
-					goto leave;
-				}
-				if (key == 's' && move == 'w') {
-					goto leave;
-				}
-				if (key == 'a' && move == 'd') {
-					goto leave;
-				}
-				if (key == 'd' && move == 'a') {
-					goto leave;
-				}
-				move = key;
-			}
-		}
-		if (move == 'q') { break; }
-
-		for (int i = snakeSize; i > 0; i--) {
-			snake[i] = snake[i - 1];
-			drawSquare(gameSize, snake[i], 22);
+				if (key == 'w' && move != 's') { move = key; }
+				if (key == 's' && move != 'w') { move = key; }
+				if (key == 'a' && move != 'd') { move = key; }
+				if (key == 'd' && move != 'a') { move = key; }
+				if (key == 'q') { goto leave; }
 		}
 
 		switch (move) {
@@ -112,8 +87,13 @@ int main(void) {
 				drawSquare(gameSize, snake[0], 2);
 				break;
 		}
+		
+		for (int i = snakeSize + 1; i > 0; i--) {
+			snake[i] = snake[i - 1];
+		}
 
-		drawSquare(gameSize, snake[snakeSize], 0);
+		drawSquare(gameSize, snake[2], 22);
+		drawSquare(gameSize, snake[snakeSize + 1], 0);
 		fflush(stdout);
 
 		for (int i = 0; i < foodQuantity; i++) { 
@@ -132,9 +112,8 @@ int main(void) {
 			}
 		}
 		
-		// TODO check why substracting from game grid boxes doest work
 		if (snakeSize > ammountOfBoxesInGrid - foodQuantity) {
-			won = true;
+			win = true;
 			goto leave;
 		}
 
@@ -146,8 +125,8 @@ int main(void) {
 	leave:
 	stopTerm();
 	fflush(stdout);
-	if (won) {
-		printf("\e[38;5;3m<===|won|===>\e[0m\n");
+	if (win) {
+		printf("\e[38;5;3m<===|win|===>\e[0m\n");
 	} else {
 		printf("\e[38;5;1m>----|lose|----<\n");
 	}

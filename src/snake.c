@@ -22,21 +22,21 @@ bool isVecUsed(Vec new, Vec *oldArr, int foodSize, Vec *snake, int snakeSize) {
 	return false;
 }
 
-
 int main(void) {
 	Vec gameSize;
 	gameSize.x = 6;
 	gameSize.y = 8;
-	int foodQuantity = 30;
-	if (foodQuantity > (gameSize.x * gameSize.y) - 1) {
-		printf("too big foodQuantity max is %i\n", (gameSize.x * gameSize.y) - 1);
+	int ammountOfBoxesInGrid = gameSize.x * gameSize.y;
+	int foodQuantity = 33;
+	if (foodQuantity > (ammountOfBoxesInGrid) - 1) {
+		printf("too big foodQuantity max is %i\n", (ammountOfBoxesInGrid) - 1);
 		return 1;
 	}
-	int points = 2;
-	Vec snake[gameSize.x * gameSize.y];
+	int snakeSize = 2;
+	Vec snake[ammountOfBoxesInGrid];
 	snake[0].x = gameSize.x / 2;
 	snake[0].y = gameSize.y / 2;
-	for (int i = 1, n = gameSize.x * gameSize.y; i < n; i++) {
+	for (int i = 1, n = ammountOfBoxesInGrid; i < n; i++) {
 		snake[i].x = 0;
 		snake[i].y = 0;
 	}
@@ -45,6 +45,7 @@ int main(void) {
 		food[i].x = -1;
 		food[i].y = -1;
 	}
+
 	srand(time(NULL));
 	initTerm();
 
@@ -53,7 +54,7 @@ int main(void) {
 		do {
 			new.x = rand() % gameSize.x;
 			new.y = rand() % gameSize.y;
-		} while (isVecUsed(new, food, foodQuantity, snake, points));
+		} while (isVecUsed(new, food, foodQuantity, snake, snakeSize));
 		food[i] = new;
 		drawSquare(gameSize, food[i], 1);
 	}
@@ -65,11 +66,13 @@ int main(void) {
 	bool won = false;
 	while (1) {
 		// key fetching logic //
+		// NOTE : for some reason "kbHit() == 1" fells soother thab "kbHit() > 0"
 		while (kbHit() == 1) {
 			key = fgetc(stdin);
 			if (key == 'w' || key == 's' || key == 'a' || key == 'd' || key == 'q') {
+				// TODO make some sor of reverse datatype for keys
+				// TODO change from leave to just ignore input
 				if (key == 'w' && move == 's') {
-					points++;
 					goto leave;
 				}
 				if (key == 's' && move == 'w') {
@@ -85,8 +88,8 @@ int main(void) {
 			}
 		}
 		if (move == 'q') { break; }
-		// snake game logic //
-		for (int i = points; i > 0; i--) {
+
+		for (int i = snakeSize; i > 0; i--) {
 			snake[i] = snake[i - 1];
 			drawSquare(gameSize, snake[i], 22);
 		}
@@ -110,23 +113,27 @@ int main(void) {
 				break;
 		}
 
-		drawSquare(gameSize, snake[points], 0);
+		drawSquare(gameSize, snake[snakeSize], 0);
 		fflush(stdout);
 
 		for (int i = 0; i < foodQuantity; i++) { 
 			if (snake[0].x == food[i].x && snake[0].y == food[i].y) {
+				// TODO change from repeating for new pos 
+				// to acquaring new pos from arr with
+				// avalibe positions
 				Vec new;
 				do {
 					new.x = rand() % gameSize.x;
 					new.y = rand() % gameSize.y;
-				} while (isVecUsed(new, food, foodQuantity, snake, points));
+				} while (isVecUsed(new, food, foodQuantity, snake, snakeSize));
 				food[i] = new;
 				drawSquare(gameSize, food[i], 1);
-				points = points + 1;
+				snakeSize++;
 			}
 		}
-
-		if (points >= gameSize.x * gameSize.y) {
+		
+		// TODO check why substracting from game grid boxes doest work
+		if (snakeSize > ammountOfBoxesInGrid - foodQuantity) {
 			won = true;
 			goto leave;
 		}

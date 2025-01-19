@@ -9,7 +9,7 @@
 #include "./terminal.h"
 
 Vec choeseVecFromArray(Vec *arr, int size) {
-
+	return arr[(rand() % size)];
 }
 
 bool isVecUsed(Vec new, Vec *oldArr, int foodSize, Vec *snake, int snakeSize) {
@@ -29,8 +29,8 @@ bool isVecUsed(Vec new, Vec *oldArr, int foodSize, Vec *snake, int snakeSize) {
 int main(void) {
 	Vec gameSize;
 
-	gameSize.x = 25;
-	gameSize.y = 35;
+	gameSize.x = 5;
+	gameSize.y = 5;
 	int foodQuantity = 4;
 	int snakeSize = 2;
 	int ammountOfBoxesInGrid = gameSize.x * gameSize.y;
@@ -46,6 +46,15 @@ int main(void) {
 	for (int i = 1, n = ammountOfBoxesInGrid; i < n; i++) {
 		snake[i] = snake[0];
 	}
+
+	Vec freeBoxesInGrid[ammountOfBoxesInGrid];
+	for (int i = 0, j = 0; i < ammountOfBoxesInGrid; i++) {
+		if (i % gameSize.x == 0) { j++; }
+		freeBoxesInGrid[i].x = i % gameSize.x;
+		freeBoxesInGrid[i].y = j;
+		printf("iteration:%i<(x:%i;y%i)>\n", i, i, j);
+	}
+
 	Vec food[foodQuantity];
 	srand(time(NULL));
 	initTerm();
@@ -102,20 +111,16 @@ int main(void) {
 
 		for (int i = 0; i < foodQuantity; i++) { 
 			if (snake[0].x == food[i].x && snake[0].y == food[i].y) {
-				// TODO change from repeating for new pos 
-				// to acquaring new pos from arr with
-				// avalibe positions
-				Vec new;
-				do {
-					new.x = rand() % gameSize.x;
-					new.y = rand() % gameSize.y;
-				} while (isVecUsed(new, food, foodQuantity, snake, snakeSize));
-				food[i] = new;
+				//food[i] = choseVecFromArray(freeBoxesInGrid);
 				drawSquare(gameSize, food[i], 1);
 				snakeSize++;
 			}
 		}
 		
+		if (snake[0].x > gameSize.x || snake[0].x < 0 || snake[0].y > gameSize.y || snake[0].y < 0) {
+			win = false;
+			goto leave;
+		}
 		if (snakeSize > ammountOfBoxesInGrid - foodQuantity) {
 			win = true;
 			goto leave;
